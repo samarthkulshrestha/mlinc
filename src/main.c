@@ -4,6 +4,7 @@
 
 #include "arena.c"
 #include "prng.c"
+#include <stdio.h>
 #include <string.h>
 
 typedef struct {
@@ -12,6 +13,7 @@ typedef struct {
 } matrix;
 
 matrix* mat_create(mem_arena* arena, u32 rows, u32 cols);
+matrix* mat_load(mem_arena* arena, u32 rows, u32 cols, const char* filename);
 b32 mat_copy(matrix* dst, matrix* src);
 void mat_clear(matrix* mat);
 void mat_fill(matrix* mat, f32 x);
@@ -44,6 +46,23 @@ matrix* mat_create(mem_arena* arena, u32 rows, u32 cols) {
   mat->rows = rows;
   mat->cols = cols;
   mat->data = PUSH_ARRAY(arena, f32, (u64)rows * cols);
+
+  return mat;
+}
+
+matrix* mat_load(mem_arena* arena, u32 rows, u32 cols, const char* filename) {
+  matrix* mat = mat_create(arena, rows, cols);
+
+  FILE* f = fopen(filename, "rb");
+
+  fseek(f, 0, SEEK_END);
+  u64 size = ftell(f);
+  fseek(f, 0, SEEK_SET);
+
+  size = MIN(size, sizeof(f32) * rows * cols);
+  fread(mat->data, 1, size, f);
+
+  fclose(f);
 
   return mat;
 }
