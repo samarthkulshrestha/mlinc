@@ -196,3 +196,16 @@ b32 mat_mul(
 
   return true;
 }
+
+b32 mat_relu(matrix* out, const matrix* in) {
+  if (out->rows != in->rows || out->cols != in->cols) {
+    return false;
+  }
+
+  u64 size = (u64)out->rows * out->cols;
+  for (u64 i = 0; i < size; i++) {
+    out->data[i] = MAX(0, in->data[i]);
+  }
+
+  return true;
+}
