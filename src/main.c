@@ -209,3 +209,39 @@ b32 mat_relu(matrix* out, const matrix* in) {
 
   return true;
 }
+
+b32 mat_softmax(matrix* out, const matrix* in) {
+  // o_i = e^a_i / sum(e^a_i)
+  if (out->rows != in->rows || out->cols != in->cols) {
+    return false;
+  }
+
+  u64 size = (u64)out->rows * out->cols;
+
+  f32 sum = 0.0f;
+  for (u64 i = 0; i < size; i++) {
+    out->data[i] = expf(in->data[i]);
+    sum += out->data[i];
+  }
+
+  mat_scale(out, 1.0f / sum);
+
+  return true;
+}
+
+
+b32 mat_cross_entropy(matrix* out, const matrix* p, const matrix* q) {
+  if (p->rows != q->rows || p->cols != q->cols) { return false; }
+  if (out->rows != p->rows || out->cols != p->cols) { return false; }
+
+  u64 size = (u64)out->rows * out->cols;
+  for (u64 i = 0; i < size; i++) {
+    out->data[i] = p->data[i] == 0.0f ? 0.0f : p->data[i] * -logf(q->data[i]);
+  }
+
+  return true;
+}
+
+b32 mat_relu_add_grad(matrix* out, const matrix* in);
+b32 mat_softmax_add_grad(matrix* out, const matrix* softmax_out);
+b32 mat_cross_entropy_add_grad(matrix* out, const matrix* p, const matrix* q);
