@@ -37,6 +37,32 @@ void draw_mnist_digit(f32* data);
 
 int main(void) {
   mem_arena* perm_arena = arena_create(GiB(1), MiB(1));
+
+  matrix* train_images = mat_load(perm_arena, 60000, 784, "data/train_images.mat");
+  // matrix* test_images = mat_load(perm_arena, 10000, 784, "data/test_images.mat");
+  matrix* train_labels = mat_create(perm_arena, 60000, 10);
+  matrix* test_labels = mat_create(perm_arena, 10000, 10);
+
+  {
+    matrix* train_labels_file = mat_load(perm_arena, 60000, 1, "data/train_labels.mat");
+    matrix* test_labels_file = mat_load(perm_arena, 10000, 1, "data/test_labels.mat");
+
+    for (u32 i = 0; i < 60000; i++) {
+      u32 num = train_labels_file->data[i];
+      train_labels->data[i * 10 + num] = 1.0f;
+    }
+    for (u32 i = 0; i < 10000; i++) {
+      u32 num = test_labels_file->data[i];
+      test_labels->data[i * 10 + num] = 1.0f;
+    }
+  }
+
+  draw_mnist_digit(train_images->data);
+  for (u32 i = 0; i < 10; i++) {
+    printf("%.0f ", train_labels->data[i]);
+  }
+  printf("\n");
+
   arena_destroy(perm_arena);
 
   return 0;
