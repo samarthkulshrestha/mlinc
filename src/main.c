@@ -33,6 +33,8 @@ b32 mat_relu_add_grad(matrix* out, const matrix* in);
 b32 mat_softmax_add_grad(matrix* out, const matrix* softmax_out);
 b32 mat_cross_entropy_add_grad(matrix* out, const matrix* p, const matrix* q);
 
+void draw_mnist_digit(f32* data);
+
 int main(void) {
   mem_arena* perm_arena = arena_create(GiB(1), MiB(1));
   arena_destroy(perm_arena);
@@ -264,3 +266,15 @@ b32 mat_cross_entropy(matrix* out, const matrix* p, const matrix* q) {
 b32 mat_relu_add_grad(matrix* out, const matrix* in);
 b32 mat_softmax_add_grad(matrix* out, const matrix* softmax_out);
 b32 mat_cross_entropy_add_grad(matrix* out, const matrix* p, const matrix* q);
+
+void draw_mnist_digit(f32* data) {
+  for (u32 y = 0; y < 28; y++) {
+    for (u32 x = 0; x < 28; x++) {
+      f32 num = data[x + y * 28];
+      u32 col = 232 + (u32)(num * 24);
+      printf("\x1b[48;5;%dm  ", col);
+    }
+    printf("\n");
+  }
+  printf("\x1b[0m");
+}
